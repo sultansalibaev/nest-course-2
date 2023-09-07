@@ -9,6 +9,13 @@ async function start() {
     const PORT = process.env.PORT || 5000
     const app = await NestFactory.create(AppModule)
 
+    // app.enableCors();
+    app.enableCors({
+        origin: 'http://localhost:3000',
+        credentials: true, // << totally ruins it
+        preflightContinue: false,
+        optionsSuccessStatus: 204
+    });
     const config = new DocumentBuilder()
         .setTitle('Урок по продвинутому BACKEND')
         .setDescription('Документация REST API')
