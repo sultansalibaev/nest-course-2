@@ -1,4 +1,4 @@
-import {Body, Controller, Post, Res} from '@nestjs/common';
+import {Body, Controller, Post, Req, Res} from '@nestjs/common';
 import {ApiTags} from "@nestjs/swagger";
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {AuthService} from "./auth.service";
@@ -17,7 +17,7 @@ export class AuthController {
             httpOnly: true,
             secure: false,
             sameSite: 'lax',
-            expires: new Date(Date.now() + (24 * 60 * 1000)),
+            expires: new Date(Date.now() + (60 * 1000)),
         })
         return { status: 'ok', token }
     }
@@ -31,6 +31,18 @@ export class AuthController {
     @Post('/registration')
     registration(@Body() userDto: CreateUserDto) {
         return this.authService.registration(userDto)
+    }
+
+    @Post('/refresh')
+    async refresh(@Body() email: { email: string }, @Res({ passthrough: true }) res) {
+        const { token } = await this.authService.refreshToken(email.email)
+        res.cookie('access_token', token, {
+            httpOnly: true,
+            secure: false,
+            sameSite: 'lax',
+            expires: new Date(Date.now() + (60 * 1000)),
+        })
+        return { status: 'ok', token }
     }
 
 }

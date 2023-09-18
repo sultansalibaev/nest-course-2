@@ -38,6 +38,20 @@ export class UsersService {
         return user
     }
 
+    async updateRefreshToken(userId: number, refresh_token: string) {
+        const user = await this.userRepository.findByPk(userId)
+
+        if (!user) {
+            throw new HttpException('Пользователь не найден', HttpStatus.NOT_FOUND)
+        }
+
+        user.refreshToken = refresh_token
+
+        await user.save()
+
+        return user
+    }
+
     async addRole(dto: AddRoleDto) {
         const user = await this.userRepository.findByPk(dto.userId)
         const role = await this.roleService.getRoleByValue(dto.value)

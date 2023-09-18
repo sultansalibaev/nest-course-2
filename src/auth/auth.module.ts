@@ -13,7 +13,7 @@ import * as process from "process";
       JwtModule.register({
         secret: process.env.SECRET_KEY || "SECRET_KEY_123456789",
         signOptions: {
-          expiresIn: '24h'
+          expiresIn: '60s'
         }
       })
   ],

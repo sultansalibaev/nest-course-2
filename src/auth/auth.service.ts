@@ -1,7 +1,7 @@
 import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {UsersService} from "../users/users.service";
-import {JwtService} from "@nestjs/jwt";
+import {JwtService, JwtSignOptions} from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs"
 import {User} from "../users/users.model";
 
@@ -14,7 +14,25 @@ export class AuthService {
     async login(userDto: CreateUserDto) {
         const user = await this.validateUser(userDto)
 
+        const { token: refresh_token } = await this.generateToken(user, {expiresIn: '30d'})
+        this.userService.updateRefreshToken(user.id , refresh_token)
         return this.generateToken(user)
+    }
+
+    async refreshToken(email: string) {
+        const user = await this.userService.getUserByEmail(email)
+
+        if (!user) {
+            throw new HttpException('Пользователь с таким email не существует', HttpStatus.BAD_REQUEST)
+        }
+
+        console.log('refreshToken', user.refreshToken)
+
+        let is_old_token = this.jwtService.verify(user.refreshToken)
+
+        return is_old_token
+            ? this.generateToken(user)
+            : { token: null }
     }
 
     async registration(userDto: CreateUserDto) {
@@ -30,10 +48,11 @@ export class AuthService {
             password: hashPassword
         })
 
-        return this.generateToken(user)
+        // return this.generateToken(user)
+        return true
     }
 
-    private async generateToken(user: User) {
+    private async generateToken(user: User, options?: JwtSignOptions) {
         const payload = {
             id: user.id,
             email: user.email,
@@ -41,7 +60,7 @@ export class AuthService {
         }
 
         const result: {token:string} = {
-            token: this.jwtService.sign(payload)
+            token: this.jwtService.sign(payload, options)
         }
 
         return result
