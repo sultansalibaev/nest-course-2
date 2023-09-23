@@ -29,7 +29,17 @@
 ## Installation
 
 ```bash
+# install node_modules
 $ npm install
+
+# run all seeders
+$ npx sequelize-cli db:seed:all
+
+# for generate some seeder
+#$ npx sequelize-cli seed:generate --name user-roles
+
+# for generate some model
+#$ npx sequelize-cli model:generate --name User
 ```
 
 ## Running the app
@@ -61,6 +71,8 @@ $ npm run test:cov
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+
+[Sequelize Migrations Documentation](https://sequelize.org/docs/v6/other-topics/migrations/)
 
 ## Stay in touch
 

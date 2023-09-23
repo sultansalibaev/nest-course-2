@@ -1,18 +1,25 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
-import {User} from "./users.model";
+import {User, UserCreationAttrs} from "./users.model";
 import {InjectModel} from "@nestjs/sequelize";
-import {CreateUserDto} from "./dto/create-user.dto";
+// import {CreateUserDto} from "./dto/create-user.dto";
 import {RolesService} from "../roles/roles.service";
 import {AddRoleDto} from "./dto/add-role.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
+// import {MailerService} from "@nestjs-modules/mailer";
 
 @Injectable()
 export class UsersService {
 
-    constructor(@InjectModel(User) private userRepository: typeof User, private roleService: RolesService) {
+    constructor(
+        @InjectModel(User) private userRepository: typeof User,
+        private roleService: RolesService
+    ) {
     }
-    async createUser(dto: CreateUserDto) {
+    async createUser(dto: UserCreationAttrs) {
+
         const user = await this.userRepository.create(dto)
+
+        // await this.mailerService.sendActivationMail(dto.email, `${process.env.API_URL}/api/activate/${activationLink}`)
         const role = await this.roleService.getRoleByValue('ADMIN')
 
         await user.$set('roles', [role.id])
@@ -73,6 +80,21 @@ export class UsersService {
 
         user.banned = true
         user.banReason = dto.banReason
+
+        await user.save()
+
+        return user
+    }
+
+    async activate(link: string) {
+        const user = await this.userRepository.findOne({
+            where: { activationLink: link },
+            include: { all: true }
+        })
+
+        if (!user) throw new HttpException('Некорректный ссылка активации', HttpStatus.BAD_REQUEST)
+
+        user.isActivated = true
 
         await user.save()
 

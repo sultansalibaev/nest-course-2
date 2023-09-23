@@ -4,9 +4,10 @@ import {Role} from "../roles/roles.model";
 import {UserRoles} from "../roles/user-roles.model";
 import {Post} from "../posts/posts.model";
 
-interface UserCreationAttrs {
+export interface UserCreationAttrs {
     email: string
     password: string
+    activationLink?: string
 }
 
 @Table({tableName: 'users'})
@@ -33,6 +34,12 @@ export class User extends Model<User, UserCreationAttrs> {
 
     @Column({ type: DataType.STRING, allowNull: true })
     refreshToken: string
+
+    @Column({ type: DataType.BOOLEAN, defaultValue: false })
+    isActivated: boolean
+
+    @Column({ type: DataType.STRING })
+    activationLink: string
 
     @BelongsToMany(() => Role, () => UserRoles)
     roles: Role[]

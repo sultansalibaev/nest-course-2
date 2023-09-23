@@ -13,6 +13,8 @@ import { PostsModule } from './posts/posts.module';
 import { FilesModule } from './files/files.module';
 import {ServeStaticModule} from "@nestjs/serve-static";
 import * as path from "path";
+import {MailerModule} from "@nestjs-modules/mailer";
+import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 
 @Module({
     controllers: [],
@@ -20,6 +22,31 @@ import * as path from "path";
     imports: [
         ConfigModule.forRoot({
             envFilePath: `.${process.env.NODE_ENV}.env`
+        }),
+
+        MailerModule.forRootAsync({
+            useFactory: () => ({
+                // transport: process.env.SMTP_TRANSPORT,
+                transport: {
+                    host: process.env.SMTP_HOST,
+                    port: process.env.SMTP_PORT,
+                    secure: false,
+                    auth: {
+                        user:  process.env.SMTP_USER,
+                        pass:  process.env.SMTP_PASSWORD,
+                    }
+                },
+                defaults: {
+                    from: `"Delta Education" <${process.env.SMTP_USER}>`,
+                },
+                template: {
+                    dir: path.join(__dirname, 'src/templates/email'),
+                    adapter: new HandlebarsAdapter(),
+                    options: {
+                        strict: true,
+                    },
+                },
+            }),
         }),
         ServeStaticModule.forRoot({
             rootPath: path.resolve(__dirname, 'static'),

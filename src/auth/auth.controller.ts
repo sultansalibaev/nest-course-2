@@ -29,8 +29,10 @@ export class AuthController {
     }
 
     @Post('/registration')
-    registration(@Body() userDto: CreateUserDto) {
-        return this.authService.registration(userDto)
+    async registration(@Body() userDto: CreateUserDto) {
+        const result = await this.authService.registration(userDto)
+
+        return result
     }
 
     @Post('/refresh')
