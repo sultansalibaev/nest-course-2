@@ -1,11 +1,12 @@
 import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {UsersService} from "../users/users.service";
-import {JwtService, JwtSignOptions} from "@nestjs/jwt";
+import {JwtService} from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs"
 import {User} from "../users/users.model";
 import * as uuid from 'uuid';
 import {MailerService} from "@nestjs-modules/mailer";
+import * as process from "process";
 
 @Injectable()
 export class AuthService {
@@ -18,11 +19,16 @@ export class AuthService {
     }
 
     async login(userDto: CreateUserDto) {
-        const user = await this.validateUser(userDto)
+        try {
+            const user = await this.validateUser(userDto)
 
-        const { token: refresh_token } = await this.generateToken(user, {expiresIn: '30d'})
-        this.userService.updateRefreshToken(user.id , refresh_token)
-        return this.generateToken(user)
+            // const { token: refresh_token } = await this.generateToken(user, {expiresIn: '30d'})
+            // await this.userService.updateRefreshToken(user.id, refresh_token)
+            return await this.generateToken(user)
+        }
+        catch (e) {
+            console.log(e)
+        }
     }
 
     async refreshToken(email: string) {
@@ -73,7 +79,7 @@ export class AuthService {
         return user
     }
 
-    private async generateToken(user: User, options?: JwtSignOptions) {
+    private async generateToken(user: User) {
         const payload = {
             id: user.id,
             email: user.email,
@@ -81,7 +87,7 @@ export class AuthService {
         }
 
         const result: {token:string} = {
-            token: this.jwtService.sign(payload, options)
+            token: this.jwtService.sign(payload)
         }
 
         return result

@@ -4,8 +4,7 @@ import {AppModule} from "./app.module";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {ValidationPipe} from "./pipes/validation.pipe";
 import * as cookieParser from 'cookie-parser';
-
-
+import {RolesGuard} from "./auth/roles.guard";
 
 async function start() {
     const PORT = process.env.PORT || 5000
@@ -19,6 +18,7 @@ async function start() {
         preflightContinue: false,
         optionsSuccessStatus: 204
     });
+
     const config = new DocumentBuilder()
         .setTitle('Урок по продвинутому BACKEND')
         .setDescription('Документация REST API')
@@ -29,6 +29,8 @@ async function start() {
     SwaggerModule.setup('/api/docs', app, document)
 
     app.useGlobalPipes(new ValidationPipe())
+    // @ts-ignore
+    app.useGlobalGuards(RolesGuard)
 
     await app.listen(PORT, () => console.log(`Server started on port = ${PORT}`))
 }

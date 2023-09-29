@@ -20,7 +20,7 @@ export class UsersService {
         const user = await this.userRepository.create(dto)
 
         // await this.mailerService.sendActivationMail(dto.email, `${process.env.API_URL}/api/activate/${activationLink}`)
-        const role = await this.roleService.getRoleByValue('ADMIN')
+        const role = await this.roleService.getRoleByValue('USER')
 
         await user.$set('roles', [role.id])
 

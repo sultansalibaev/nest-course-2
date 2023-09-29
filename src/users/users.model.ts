@@ -32,7 +32,7 @@ export class User extends Model<User, UserCreationAttrs> {
     @Column({ type: DataType.STRING, allowNull: true })
     banReason: string
 
-    @Column({ type: DataType.STRING, allowNull: true })
+    @Column({ type: DataType.STRING(1000), allowNull: true })
     refreshToken: string
 
     @Column({ type: DataType.BOOLEAN, defaultValue: false })

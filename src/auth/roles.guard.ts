@@ -11,6 +11,10 @@ import {JwtService} from "@nestjs/jwt";
 import {ROLES_KEY} from "./roles-auth.decorator";
 import {Reflector} from "@nestjs/core";
 
+export interface AuthGuardConfig {
+    disabled?: boolean;
+}
+
 @Injectable()
 export class RolesGuard implements CanActivate {
     constructor(private jwtService: JwtService, private reflector: Reflector) {
@@ -19,16 +23,30 @@ export class RolesGuard implements CanActivate {
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest()
         try {
+
+            const handlerConfig = this.reflector.get<AuthGuardConfig>(
+                ROLES_KEY,
+                context.getHandler(),
+            );
+            const controllerConfig = this.reflector.get<AuthGuardConfig>(
+                ROLES_KEY,
+                context.getClass(),
+            );
+            if (controllerConfig?.disabled || handlerConfig?.disabled) {
+                return true;
+            }
             const requiredRoles = this.reflector.getAllAndOverride<string[], string>(ROLES_KEY, [
                 context.getHandler(),
                 context.getClass()
             ])
 
-            if (!requiredRoles) {
-                return true
-            }
+            // if (!requiredRoles) {
+            //     return true
+            // }
 
             const access_token = request.cookies['access_token']
+
+            console.log('access_token', access_token, !access_token)
 
             if (!access_token) {
                 throw new UnauthorizedException({
@@ -37,12 +55,22 @@ export class RolesGuard implements CanActivate {
             }
 
             const user = this.jwtService.verify(access_token)
+            console.log('user', user)
             request.user = user
 
-            return user.roles.some(role => requiredRoles.includes(role.value))
+            const hasRole: boolean = user.roles.some(role => requiredRoles.includes(role.value))
+            console.log('hasRole', hasRole)
+
+            if (hasRole) {
+                return hasRole
+            }
+            else {
+                throw new HttpException('Нет доступа', HttpStatus.FORBIDDEN)
+            }
         }
-        catch (e) {
-            throw new HttpException('Нет доступа', HttpStatus.FORBIDDEN)
+        catch (error) {
+            console.log('RolesGuard - error', error)
+            throw new HttpException(error.message, error.status)
         }
     }
 }
