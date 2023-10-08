@@ -2,7 +2,7 @@ import {
     CanActivate,
     ExecutionContext,
     HttpException,
-    HttpStatus,
+    HttpStatus, Inject,
     Injectable,
     UnauthorizedException
 } from "@nestjs/common";
@@ -17,24 +17,12 @@ export interface AuthGuardConfig {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
-    constructor(private jwtService: JwtService, private reflector: Reflector) {
+    constructor(@Inject(JwtService) private jwtService: JwtService, private reflector: Reflector) {
     }
 
     canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
         const request = context.switchToHttp().getRequest()
         try {
-
-            const handlerConfig = this.reflector.get<AuthGuardConfig>(
-                ROLES_KEY,
-                context.getHandler(),
-            );
-            const controllerConfig = this.reflector.get<AuthGuardConfig>(
-                ROLES_KEY,
-                context.getClass(),
-            );
-            if (controllerConfig?.disabled || handlerConfig?.disabled) {
-                return true;
-            }
             const requiredRoles = this.reflector.getAllAndOverride<string[], string>(ROLES_KEY, [
                 context.getHandler(),
                 context.getClass()

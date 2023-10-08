@@ -15,10 +15,13 @@ import {ServeStaticModule} from "@nestjs/serve-static";
 import * as path from "path";
 import {MailerModule} from "@nestjs-modules/mailer";
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
+import {RolesGuard} from "./auth/roles.guard";
 
 @Module({
     controllers: [],
-    providers: [],
+    providers: [
+        RolesGuard
+    ],
     imports: [
         ConfigModule.forRoot({
             envFilePath: `.${process.env.NODE_ENV}.env`

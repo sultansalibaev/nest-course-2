@@ -7,6 +7,7 @@ import {User} from "../users/users.model";
 import * as uuid from 'uuid';
 import {MailerService} from "@nestjs-modules/mailer";
 import * as process from "process";
+import * as jwt from "jsonwebtoken";
 
 @Injectable()
 export class AuthService {
@@ -31,8 +32,24 @@ export class AuthService {
         }
     }
 
-    async refreshToken(email: string) {
-        const user = await this.userService.getUserByEmail(email)
+
+    async getPayloadFromExpiredToken(token: string) {
+        try {
+            const decodedToken = jwt.decode(token, { complete: true });
+            if (!decodedToken) {
+                throw new Error('Invalid token');
+            }
+
+            return decodedToken.payload;
+        } catch (error) {
+            // Handle token decoding errors here (e.g., invalid token)
+            throw new Error('Token decoding failed');
+        }
+    }
+    async refreshToken(oldToken: string) {
+        const oldUser = await this.getPayloadFromExpiredToken(oldToken)
+        if (typeof oldUser == 'string') return { token: null }
+        const user = await this.userService.getUserByEmail(oldUser?.email)
 
         if (!user) {
             throw new HttpException('Пользователь с таким email не существует', HttpStatus.BAD_REQUEST)
@@ -40,11 +57,19 @@ export class AuthService {
 
         console.log('refreshToken', user.refreshToken)
 
-        let is_old_token = this.jwtService.verify(user.refreshToken)
+        let is_old_token = await this.verifyToken(user.refreshToken)
 
         return is_old_token
             ? this.generateToken(user)
             : { token: null }
+    }
+    async verifyToken(token: string) {
+        try {
+            this.jwtService.verify(token);
+            return true;
+        } catch (error) {
+            return false;
+        }
     }
 
     async registration(userDto: CreateUserDto) {
