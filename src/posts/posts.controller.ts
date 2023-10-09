@@ -13,7 +13,7 @@ export class PostsController {
 
     @Post()
     @UseInterceptors(FileInterceptor('image'))
-    @Roles("USER")
+    @Roles("admin", "user")
     @UseGuards(RolesGuard)
     createPost(@Body() dto: CreatePostDto, @UploadedFile() image) {
         return this.postService.create(dto, image)

@@ -16,7 +16,7 @@ export class AuthController {
         res.cookie('access_token', token, {
             httpOnly: true,
             secure: false,
-            sameSite: 'lax',
+            sameSite: 'strict',
             expires: new Date(Date.now() + (60 * 1000)),
         })
         return { status: 'ok', token }
@@ -41,7 +41,7 @@ export class AuthController {
         res.cookie('access_token', token, {
             httpOnly: true,
             secure: false,
-            sameSite: 'lax',
+            sameSite: 'strict',
             expires: new Date(Date.now() + (60 * 1000)),
         })
         return { status: 'ok', token }

@@ -1,7 +1,7 @@
 import {HttpException, HttpStatus, Injectable, UnauthorizedException} from '@nestjs/common';
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {UsersService} from "../users/users.service";
-import {JwtService} from "@nestjs/jwt";
+import {JwtService, JwtSignOptions} from "@nestjs/jwt";
 import * as bcrypt from "bcryptjs"
 import {User} from "../users/users.model";
 import * as uuid from 'uuid';
@@ -23,9 +23,13 @@ export class AuthService {
         try {
             const user = await this.validateUser(userDto)
 
-            // const { token: refresh_token } = await this.generateToken(user, {expiresIn: '30d'})
-            // await this.userService.updateRefreshToken(user.id, refresh_token)
-            return await this.generateToken(user)
+            const { token: refresh_token } = await this.generateToken(user, {expiresIn: '14d'})
+            const { token: access_token } = await this.generateToken(user)
+
+            await this.userService.updateAccessToken(user.id, access_token)
+            await this.userService.updateRefreshToken(user.id, refresh_token)
+
+            return { token: access_token }
         }
         catch (e) {
             console.log(e)
@@ -59,9 +63,19 @@ export class AuthService {
 
         let is_old_token = await this.verifyToken(user.refreshToken)
 
-        return is_old_token
-            ? this.generateToken(user)
+        const new_access_token = is_old_token
+            ? await this.generateToken(user)
             : { token: null }
+
+        if (user.accessToken != oldToken) {
+            throw new UnauthorizedException({
+                message: 'Пользователь не авторизован'
+            })
+        }
+
+        await this.userService.updateAccessToken(user.id, new_access_token.token)
+
+        return new_access_token
     }
     async verifyToken(token: string) {
         try {
@@ -104,7 +118,7 @@ export class AuthService {
         return user
     }
 
-    private async generateToken(user: User) {
+    private async generateToken(user: User, options?: JwtSignOptions) {
         const payload = {
             id: user.id,
             email: user.email,
@@ -112,7 +126,7 @@ export class AuthService {
         }
 
         const result: {token:string} = {
-            token: this.jwtService.sign(payload)
+            token: this.jwtService.sign(payload, options)
         }
 
         return result

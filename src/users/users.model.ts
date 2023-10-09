@@ -33,6 +33,9 @@ export class User extends Model<User, UserCreationAttrs> {
     banReason: string
 
     @Column({ type: DataType.STRING(1000), allowNull: true })
+    accessToken: string
+
+    @Column({ type: DataType.STRING(1000), allowNull: true })
     refreshToken: string
 
     @Column({ type: DataType.BOOLEAN, defaultValue: false })

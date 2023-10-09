@@ -11,7 +11,7 @@ import {RolesGuard} from "../auth/roles.guard";
 @ApiTags('Пользователи')
 @Controller('users')
 @UseGuards(RolesGuard)
-@Roles("ADMIN")
+@Roles("admin")
 export class UsersController {
     constructor(private usersService: UsersService) {
     }
@@ -35,7 +35,7 @@ export class UsersController {
         return this.usersService.ban(dto)
     }
     @Get('/activate/:link')
-    @Roles("USER")
+    @Roles("admin", "user")
     async activate(@Req() req: any, @Res() res: any) {
 
         const activationLink = req.params.link

@@ -5,21 +5,20 @@ import {Roles} from "../auth/roles-auth.decorator";
 import {RolesGuard} from "../auth/roles.guard";
 
 @Controller('roles')
+@Roles("admin")
+@UseGuards(RolesGuard)
 export class RolesController {
 
     constructor(private roleService: RolesService) {
     }
 
     @Post()
-    @Roles("USER")
-    @UseGuards(RolesGuard)
+    @Roles("admin", "user")
     create(@Body() userDto: CreateRoleDto) {
         return this.roleService.createRole(userDto)
     }
 
     @Get('/:value')
-    @Roles("ADMIN")
-    @UseGuards(RolesGuard)
     getByValue(@Param('value') value: string) {
         return this.roleService.getRoleByValue(value)
     }
