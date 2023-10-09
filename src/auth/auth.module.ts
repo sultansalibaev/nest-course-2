@@ -14,7 +14,7 @@ import * as process from "process";
         global: true,
         secret: process.env.SECRET_KEY || "SECRET_KEY_123456789",
         signOptions: {
-          expiresIn: '15s'
+          expiresIn: '2h'
         }
       })
   ],

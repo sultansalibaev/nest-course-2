@@ -17,7 +17,7 @@ export class AuthController {
             httpOnly: true,
             secure: false,
             sameSite: 'strict',
-            expires: new Date(Date.now() + (60 * 1000)),
+            expires: new Date(Date.now() + (2 * 60 * 60 * 1000)),
         })
         return { status: 'ok', token }
     }
