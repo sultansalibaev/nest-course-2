@@ -1,7 +1,6 @@
 import {ArgumentMetadata, Injectable, PipeTransform} from "@nestjs/common";
 import {plainToClass} from "class-transformer";
 import {validate} from "class-validator";
-import {ValidationErrorItem} from "sequelize";
 import {ValidationException} from "../exceptions/validation.exception";
 
 
@@ -13,9 +12,10 @@ export class ValidationPipe implements PipeTransform<any> {
         const errors = await validate(obj)
 
         if (errors.length) {
-            let messages = errors.map(err => {
-                return `${err.property} - ${Object.values(err.constraints).join(', ')}`
-            })
+            let messages = errors.reduce((prev, err) => {
+                prev[err.property] = Object.values(err.constraints);
+                return prev
+            }, {})
             throw new ValidationException(messages)
         }
 

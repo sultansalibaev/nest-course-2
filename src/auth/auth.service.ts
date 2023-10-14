@@ -29,10 +29,15 @@ export class AuthService {
             await this.userService.updateAccessToken(user.id, access_token)
             await this.userService.updateRefreshToken(user.id, refresh_token)
 
-            return { token: access_token }
+
+            const refresh_payload = await this.getPayloadFromExpiredToken(refresh_token)
+
+            if (typeof refresh_payload == 'string') return { token: null, expired: Date.now() }
+
+            return { token: access_token, expired: refresh_payload?.exp }
         }
-        catch (e) {
-            console.log(e)
+        catch (error) {
+            throw new HttpException(error.response.message, error.status)
         }
     }
 
@@ -52,20 +57,22 @@ export class AuthService {
     }
     async refreshToken(oldToken: string) {
         const oldUser = await this.getPayloadFromExpiredToken(oldToken)
-        if (typeof oldUser == 'string') return { token: null }
+        if (typeof oldUser == 'string') return { token: null, expired: Date.now() }
         const user = await this.userService.getUserByEmail(oldUser?.email)
 
         if (!user) {
             throw new HttpException('Пользователь с таким email не существует', HttpStatus.BAD_REQUEST)
         }
 
-        console.log('refreshToken', user.refreshToken)
+        const refresh_payload = await this.getPayloadFromExpiredToken(user.refreshToken)
+
+        if (typeof refresh_payload == 'string') return { token: null, expired: Date.now() }
 
         let is_old_token = await this.verifyToken(user.refreshToken)
 
         const new_access_token = is_old_token
-            ? await this.generateToken(user)
-            : { token: null }
+            ? {...(await this.generateToken(user)), expired: refresh_payload?.exp}
+            : { token: null, expired: Date.now() }
 
         if (user.accessToken != oldToken) {
             throw new UnauthorizedException({

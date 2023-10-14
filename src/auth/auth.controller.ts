@@ -1,4 +1,4 @@
-import {Body, Controller, Post, Res} from '@nestjs/common';
+import {Body, Controller, HttpException, Post, Req, Res} from '@nestjs/common';
 import {ApiTags} from "@nestjs/swagger";
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {AuthService} from "./auth.service";
@@ -12,14 +12,19 @@ export class AuthController {
 
     @Post('/login')
     async login(@Body() userDto: CreateUserDto, @Res({ passthrough: true }) res) {
-        const { token } = await this.authService.login(userDto)
-        res.cookie('access_token', token, {
-            httpOnly: true,
-            secure: false,
-            sameSite: 'strict',
-            expires: new Date(Date.now() + (2 * 60 * 60 * 1000)),
-        })
-        return { status: 'ok', token }
+        try {
+            const { token, expired } = await this.authService.login(userDto)
+            res.cookie('access_token', token, {
+                httpOnly: true,
+                secure: false,
+                sameSite: 'strict',
+                expires: new Date(expired * 1000),
+            })
+            return { status: 200, message: 'Вы успешно авторизованы' }
+        }
+        catch (error) {
+            throw new HttpException(error.message, error.status)
+        }
     }
 
     @Post('/logout')
@@ -36,15 +41,16 @@ export class AuthController {
     }
 
     @Post('/refresh')
-    async refresh(@Body() body: { oldToken: string }, @Res({ passthrough: true }) res) {
-        const { token } = await this.authService.refreshToken(body.oldToken)
+    async refresh(@Res({ passthrough: true }) res, @Req() request) {
+        const oldToken = request.cookies['access_token']
+        const { token, expired } = await this.authService.refreshToken(oldToken)
         res.cookie('access_token', token, {
             httpOnly: true,
             secure: false,
             sameSite: 'strict',
-            expires: new Date(Date.now() + (60 * 1000)),
+            expires: new Date(expired * 1000),
         })
-        return { status: 'ok', token }
+        return { status: 200 }
     }
 
 
