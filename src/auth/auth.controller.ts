@@ -1,7 +1,9 @@
-import {Body, Controller, HttpException, Post, Req, Res} from '@nestjs/common';
+import {Body, Controller, HttpException, Post, Req, Res, UseGuards} from '@nestjs/common';
 import {ApiTags} from "@nestjs/swagger";
 import {CreateUserDto} from "../users/dto/create-user.dto";
 import {AuthService} from "./auth.service";
+import {RolesGuard} from "./roles.guard";
+import {Roles} from "./roles-auth.decorator";
 
 @ApiTags('Авторизация')
 @Controller('auth')
@@ -27,9 +29,16 @@ export class AuthController {
         }
     }
 
+    @UseGuards(RolesGuard)
+    @Roles("admin", "user")
     @Post('/logout')
-    logout(@Res({ passthrough: true }) res) {
+    async logout(@Res({ passthrough: true }) res, @Req() request) {
+        const user = request.user
+
+        await this.authService.logout(user)
+
         res.clearCookie('access_token')
+
         return {}
     }
 

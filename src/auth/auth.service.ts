@@ -15,7 +15,7 @@ export class AuthService {
     constructor(
         private userService: UsersService,
         private jwtService: JwtService,
-        private mailerService: MailerService
+        private mailerService: MailerService,
     ) {
     }
 
@@ -41,6 +41,17 @@ export class AuthService {
         }
     }
 
+    async logout(user: User) {
+        try {
+            await this.userService.updateAccessToken(user.id, null)
+            await this.userService.updateRefreshToken(user.id, null)
+
+            return true
+        }
+        catch (error) {
+            throw new HttpException(error.response.message, error.status)
+        }
+    }
 
     async getPayloadFromExpiredToken(token: string) {
         try {
@@ -129,7 +140,10 @@ export class AuthService {
         const payload = {
             id: user.id,
             email: user.email,
-            roles: user.roles
+            roles: user.roles.map(role => ({
+                value: role.value,
+                description: role.description,
+            }))
         }
 
         const result: {token:string} = {
@@ -141,7 +155,7 @@ export class AuthService {
 
     private async validateUser(userDto: CreateUserDto) {
         const user = await this.userService.getUserByEmail(userDto.email)
-        const passwordEquals = await bcrypt.compare(userDto.password, user.password)
+        const passwordEquals = await bcrypt.compare(userDto.password, user?.password ?? '')
 
         if (user && passwordEquals) {
             return user

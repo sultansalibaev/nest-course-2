@@ -16,6 +16,8 @@ import * as path from "path";
 import {MailerModule} from "@nestjs-modules/mailer";
 import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars.adapter";
 import {RolesGuard} from "./auth/roles.guard";
+import { ProfileModule } from './profile/profile.module';
+import {Profile} from "./profile/profile.model";
 
 @Module({
     controllers: [],
@@ -61,7 +63,7 @@ import {RolesGuard} from "./auth/roles.guard";
             username: process.env.POSTGRES_USERNAME,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Role, UserRoles, Post],
+            models: [User, Role, UserRoles, Post, Profile],
             autoLoadModels: true
         }),
         UsersModule,
@@ -69,6 +71,7 @@ import {RolesGuard} from "./auth/roles.guard";
         AuthModule,
         PostsModule,
         FilesModule,
+        ProfileModule,
     ],
 })
 export class AppModule {

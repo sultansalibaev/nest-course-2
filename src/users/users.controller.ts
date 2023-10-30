@@ -19,8 +19,8 @@ export class UsersController {
     @ApiOperation({summary: 'Получить всех пользователей'})
     @ApiResponse({status: 200, type: [User]})
     @Get()
-    getAll() {
-        return this.usersService.getAllUser()
+    async getAll() {
+        return await this.usersService.getAllUser()
     }
     @ApiOperation({summary: 'Выдать роль'})
     @ApiResponse({status: 200 })

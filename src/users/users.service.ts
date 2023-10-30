@@ -5,6 +5,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {RolesService} from "../roles/roles.service";
 import {AddRoleDto} from "./dto/add-role.dto";
 import {BanUserDto} from "./dto/ban-user.dto";
+
 // import {MailerService} from "@nestjs-modules/mailer";
 
 @Injectable()
@@ -12,7 +13,7 @@ export class UsersService {
 
     constructor(
         @InjectModel(User) private userRepository: typeof User,
-        private roleService: RolesService
+        private roleService: RolesService,
     ) {
     }
     async createUser(dto: UserCreationAttrs) {
@@ -45,7 +46,7 @@ export class UsersService {
         return user
     }
 
-    async updateRefreshToken(userId: number, refresh_token: string) {
+    async updateRefreshToken(userId: number, refresh_token: string | null) {
         const user = await this.userRepository.findByPk(userId)
 
         if (!user) {
@@ -59,7 +60,7 @@ export class UsersService {
         return user
     }
 
-    async updateAccessToken(userId: number, access_token: string) {
+    async updateAccessToken(userId: number, access_token: string | null) {
         const user = await this.userRepository.findByPk(userId)
 
         if (!user) {

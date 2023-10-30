@@ -17,6 +17,7 @@ export interface AuthGuardConfig {
 
 @Injectable()
 export class RolesGuard implements CanActivate {
+
     constructor(@Inject(JwtService) private jwtService: JwtService, private reflector: Reflector) {
     }
 
@@ -34,8 +35,6 @@ export class RolesGuard implements CanActivate {
 
             const access_token = request.cookies['access_token']
 
-            console.log('access_token', access_token, !access_token)
-
             if (!access_token) {
                 throw new UnauthorizedException({
                     message: 'Пользователь не авторизован'
@@ -43,11 +42,9 @@ export class RolesGuard implements CanActivate {
             }
 
             const user = this.jwtService.verify(access_token)
-            console.log('user', user)
             request.user = user
 
             const hasRole: boolean = user.roles.some(role => requiredRoles.includes(role.value))
-            console.log('hasRole', hasRole)
 
             if (hasRole) {
                 return hasRole
@@ -57,7 +54,8 @@ export class RolesGuard implements CanActivate {
             }
         }
         catch (error) {
-            console.log('RolesGuard - error', error)
+            console.log('RolesGuard - error', error, JSON.parse(JSON.stringify(error)))
+            if (error.message == 'jwt expired') error.status = 401
             throw new HttpException(error.message, error.status)
         }
     }
