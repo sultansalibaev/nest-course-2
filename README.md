@@ -35,6 +35,9 @@ $ npm install
 # run all seeders
 $ npx sequelize-cli db:seed:all
 
+# run some seeder
+#$ npx sequelize-cli db:seed --seed 20231108144846-article.js
+
 # for generate some seeder
 #$ npx sequelize-cli seed:generate --name user-roles
 

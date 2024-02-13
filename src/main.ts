@@ -4,6 +4,7 @@ import {AppModule} from "./app.module";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
 import {ValidationPipe} from "./pipes/validation.pipe";
 import * as cookieParser from 'cookie-parser';
+import {timeout} from "rxjs";
 
 async function start() {
     const PORT = process.env.PORT || 5000

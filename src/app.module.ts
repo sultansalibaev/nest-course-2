@@ -8,8 +8,8 @@ import { RolesModule } from './roles/roles.module';
 import {Role} from "./roles/roles.model";
 import {UserRoles} from "./roles/user-roles.model";
 import { AuthModule } from './auth/auth.module';
-import { Post } from "./posts/posts.model";
-import { PostsModule } from './posts/posts.module';
+import { Article } from "./articles/articles.model";
+import { ArticlesModule } from './articles/articles.module';
 import { FilesModule } from './files/files.module';
 import {ServeStaticModule} from "@nestjs/serve-static";
 import * as path from "path";
@@ -22,7 +22,7 @@ import {Profile} from "./profile/profile.model";
 @Module({
     controllers: [],
     providers: [
-        RolesGuard
+        RolesGuard,
     ],
     imports: [
         ConfigModule.forRoot({
@@ -63,13 +63,13 @@ import {Profile} from "./profile/profile.model";
             username: process.env.POSTGRES_USERNAME,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Role, UserRoles, Post, Profile],
+            models: [User, Role, UserRoles, Article, Profile],
             autoLoadModels: true
         }),
         UsersModule,
         RolesModule,
         AuthModule,
-        PostsModule,
+        ArticlesModule,
         FilesModule,
         ProfileModule,
     ],

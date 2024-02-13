@@ -48,7 +48,7 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
     @Column({ type: DataType.STRING, allowNull: false, defaultValue: 'RUB' })
     currency: string
 
-    @Column({ type: DataType.STRING, allowNull: true })
+    @Column({ type: DataType.STRING, allowNull: false, defaultValue: 'RUB' })
     country: string
 
     @Column({ type: DataType.STRING, allowNull: true })

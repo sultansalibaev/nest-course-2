@@ -67,6 +67,11 @@ export class AuthService {
         }
     }
     async refreshToken(oldToken: string) {
+        if (oldToken == null) {
+            throw new UnauthorizedException({
+                message: 'Пользователь не авторизован'
+            })
+        }
         const oldUser = await this.getPayloadFromExpiredToken(oldToken)
         if (typeof oldUser == 'string') return { token: null, expired: Date.now() }
         const user = await this.userService.getUserByEmail(oldUser?.email)
