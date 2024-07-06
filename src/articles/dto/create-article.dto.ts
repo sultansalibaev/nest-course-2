@@ -1,9 +1,12 @@
 
 export class CreateArticleDto {
     readonly title: string
-    readonly content: string
+    readonly views: number
+    readonly tags: string[]
+    readonly type: string[]
+    readonly images?: string
     readonly userId: number
-    readonly blocks: ArticleBlock[]
+    blocks: ArticleBlock[]
 }
 
 export type ArticleBlock = ArticleTitleBlock | ArticleTextBlock | ArticleImageBlock | ArticleQuoteBlock | ArticleCodeBlock | ArticleListBlock

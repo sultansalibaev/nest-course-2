@@ -10,6 +10,16 @@ export interface UserCreationAttrs {
     password: string
     activationLink?: string
 }
+export interface UserInfo {
+    id: number
+    email: string
+    banned: boolean,
+    banReason: string | null,
+    isActivated: boolean,
+    activationLink: string,
+    createdAt: string,
+    updatedAt: string
+}
 
 @Table({tableName: 'users'})
 export class User extends Model<User, UserCreationAttrs> {

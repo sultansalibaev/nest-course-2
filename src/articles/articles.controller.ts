@@ -24,6 +24,6 @@ export class ArticlesController {
     @Roles("admin", "user")
     @UseGuards(RolesGuard)
     async getArticle(@Param('id') id: number) {
-        return await this.articleService.getArticle(id)
+        return await this.articleService.getArticleComments(id)
     }
 }

@@ -18,6 +18,9 @@ import {HandlebarsAdapter} from "@nestjs-modules/mailer/dist/adapters/handlebars
 import {RolesGuard} from "./auth/roles.guard";
 import { ProfileModule } from './profile/profile.module';
 import {Profile} from "./profile/profile.model";
+import { CommentsModule } from './comments/comments.module';
+import { Comment } from "./comments/comments.model";
+import { ArticleComments } from "./comments/article-comments.model";
 
 @Module({
     controllers: [],
@@ -63,7 +66,7 @@ import {Profile} from "./profile/profile.model";
             username: process.env.POSTGRES_USERNAME,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Role, UserRoles, Article, Profile],
+            models: [User, Role, UserRoles, Article, Profile, Comment, ArticleComments],
             autoLoadModels: true
         }),
         UsersModule,
@@ -72,6 +75,7 @@ import {Profile} from "./profile/profile.model";
         ArticlesModule,
         FilesModule,
         ProfileModule,
+        CommentsModule,
     ],
 })
 export class AppModule {
