@@ -5,7 +5,7 @@ import {FilesInterceptor} from "@nestjs/platform-express";
 import {Roles} from "../auth/roles-auth.decorator";
 import {RolesGuard} from "../auth/roles.guard";
 
-@Controller('article')
+@Controller('articles')
 export class ArticlesController {
 
     constructor(private articleService: ArticlesService) {

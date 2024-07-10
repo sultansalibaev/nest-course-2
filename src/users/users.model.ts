@@ -4,21 +4,12 @@ import {Role} from "../roles/roles.model";
 import {UserRoles} from "../roles/user-roles.model";
 import {Article} from "../articles/articles.model";
 import {Profile} from "../profile/profile.model";
+import { Comment } from "src/comments/comments.model";
 
 export interface UserCreationAttrs {
     email: string
     password: string
     activationLink?: string
-}
-export interface UserInfo {
-    id: number
-    email: string
-    banned: boolean,
-    banReason: string | null,
-    isActivated: boolean,
-    activationLink: string,
-    createdAt: string,
-    updatedAt: string
 }
 
 @Table({tableName: 'users'})
@@ -26,6 +17,12 @@ export class User extends Model<User, UserCreationAttrs> {
     @ApiProperty({example: '1', description: 'Уникальный идентификатор'})
     @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
     id: number
+
+    @Column({ type: DataType.STRING(48), allowNull: true })
+    username: string
+
+    @Column({ type: DataType.STRING(31), allowNull: true })
+    phone: string
 
     @ApiProperty({example: 'user@mail.ru', description: 'Уникальный почтовый адрес'})
     @Column({ type: DataType.STRING, unique: true, allowNull: false })
@@ -60,6 +57,9 @@ export class User extends Model<User, UserCreationAttrs> {
 
     @HasMany(() => Article)
     articles: Article[]
+
+    @HasMany(() => Comment)
+    comments: Comment[]
 
     @HasMany(() => Profile)
     profile: Profile[]

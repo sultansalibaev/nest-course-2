@@ -1,8 +1,8 @@
 import {BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
-import {User, UserInfo} from "../users/users.model";
+import {User} from "../users/users.model";
 import {ArticleBlock} from "./dto/create-article.dto";
-import { Comment } from "src/comments/comments.model";
-import { ArticleComments } from "src/comments/article-comments.model";
+// import { Comment } from "src/comments/comments.model";
+// import { ArticleComments } from "src/comments/article-comments.model";
 
 export interface ArticleCreationAttrs {
     title: string
@@ -39,8 +39,8 @@ export class Article extends Model<Article, ArticleCreationAttrs> {
     userId: number
 
     @BelongsTo(() => User)
-    author: UserInfo
+    author: User
 
-    @BelongsToMany(() => Comment, () => ArticleComments)
-    comments: Comment[]
+    // @BelongsToMany(() => Comment, () => ArticleComments)
+    // comments: Comment[]
 }

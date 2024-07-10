@@ -1,5 +1,6 @@
 
 export class CreateArticleDto {
+    readonly id?: string
     readonly title: string
     readonly views: number
     readonly tags: string[]

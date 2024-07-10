@@ -20,7 +20,7 @@ import { ProfileModule } from './profile/profile.module';
 import {Profile} from "./profile/profile.model";
 import { CommentsModule } from './comments/comments.module';
 import { Comment } from "./comments/comments.model";
-import { ArticleComments } from "./comments/article-comments.model";
+// import { ArticleComments } from "./comments/article-comments.model";
 
 @Module({
     controllers: [],
@@ -66,7 +66,7 @@ import { ArticleComments } from "./comments/article-comments.model";
             username: process.env.POSTGRES_USERNAME,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Role, UserRoles, Article, Profile, Comment, ArticleComments],
+            models: [User, Role, UserRoles, Article, Profile, Comment], // ArticleComments
             autoLoadModels: true
         }),
         UsersModule,

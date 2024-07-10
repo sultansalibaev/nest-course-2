@@ -3,6 +3,7 @@ import {InjectModel} from "@nestjs/sequelize";
 import {UsersService} from "../users/users.service";
 import {Profile, ProfileCreationAttrs} from "./profile.model";
 import {User} from "../users/users.model";
+import { excludeParams } from 'src/shared/common/utils';
 
 @Injectable()
 export class ProfileService {
@@ -17,36 +18,11 @@ export class ProfileService {
             where: { userId: user.id },
         })
 
-        const only_params = [
-            'id', 'userId', 'createdAt', 'updatedAt'
-        ]
-
-        let result = { email: user.email };
-
-        this.getOnlyNotParams(only_params, profile.dataValues, result)
-
-        return result
-    }
-
-    getOnlyParams(params, my_object) {
-        return params.reduce((obj, param) => {
-            if (typeof param === 'string') obj[param] = my_object[param]
-            return obj
-        }, {})
-    }
-
-    getOnlyNotParams(not_params, my_object, own_obj = null) {
-        return Object.keys(my_object).reduce((obj, param) => {
-            if (!not_params.includes(param)) {
-                if (own_obj === null) {
-                    obj[param] = my_object[param]
-                }
-                else {
-                    own_obj[param] = my_object[param]
-                }
-            }
-            return obj
-        }, {})
+        return excludeParams(
+            ['id', 'userId', 'createdAt', 'updatedAt'],
+            profile.dataValues,
+            { email: user.email }
+        );
     }
 
     async updateProfileData(newProfile: ProfileCreationAttrs, user: User) {
@@ -60,6 +36,10 @@ export class ProfileService {
 
         profile.save()
 
-        return newProfile
+        return excludeParams(
+            ['id', 'userId', 'createdAt', 'updatedAt'],
+            profile.dataValues,
+            { email: user.email }
+        );
     }
 }

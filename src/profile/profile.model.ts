@@ -21,14 +21,8 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
     @Column({ type: DataType.INTEGER, unique: true, autoIncrement: true, primaryKey: true })
     id: number
 
-    @Column({ type: DataType.STRING(48), allowNull: true })
-    username: string
-
     @Column({ type: DataType.BIGINT, allowNull: false, defaultValue: 0 })
     balance: number
-
-    @Column({ type: DataType.STRING(31), allowNull: true })
-    phone: string
 
     @Column({ type: DataType.STRING, allowNull: true })
     avatar: string

@@ -5,9 +5,7 @@ module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.bulkInsert('profile', [{
       id: 1,
-      username: 'Sula',
       balance: 0,
-      phone: '87789857552',
       avatar: 'https://pic.rutubelist.ru/user/3b/27/3b2758ad5492a76b578f7ee072e4e894.jpg',
       gender: 'male',
       firstname: 'Sultan',
