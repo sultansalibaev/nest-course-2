@@ -1,7 +1,7 @@
 import {BelongsTo, BelongsToMany, Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
 import {User} from "../users/users.model";
 import {ArticleBlock} from "./dto/create-article.dto";
-// import { Comment } from "src/comments/comments.model";
+import { Comment } from "src/comments/comments.model";
 // import { ArticleComments } from "src/comments/article-comments.model";
 
 export interface ArticleCreationAttrs {
@@ -21,6 +21,9 @@ export class Article extends Model<Article, ArticleCreationAttrs> {
 
     @Column({ type: DataType.STRING, allowNull: false })
     title: string
+
+    @Column({ type: DataType.STRING, allowNull: false })
+    image: string
 
     @Column({ type: DataType.INTEGER, allowNull: false, defaultValue: 0 })
     views: number

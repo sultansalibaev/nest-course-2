@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Param, Post, Req, UploadedFiles, UseGuards, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, Query, Req, UploadedFiles, UseGuards, UseInterceptors} from '@nestjs/common';
 import {CreateArticleDto} from "./dto/create-article.dto";
 import {ArticlesService} from "./articles.service";
 import {FilesInterceptor} from "@nestjs/platform-express";
@@ -25,5 +25,12 @@ export class ArticlesController {
     @UseGuards(RolesGuard)
     async getArticle(@Param('id') id: number) {
         return await this.articleService.getArticleComments(id)
+    }
+
+    @Get()
+    @Roles("admin", "user")
+    @UseGuards(RolesGuard)
+    async getArticles(@Query() query) {
+        return await this.articleService.getArticles(query)
     }
 }

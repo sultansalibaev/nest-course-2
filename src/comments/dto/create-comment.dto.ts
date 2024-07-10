@@ -3,7 +3,8 @@
 
 export class CreateCommentDto {
     readonly text: string
-    readonly articleId: number
+    readonly entityId: number
+    readonly entityType: entityType
     readonly userId: number
 
     // @ApiProperty({example: "user@mail.ru", description: "Уникальный почтовый адрес"})
@@ -16,3 +17,5 @@ export class CreateCommentDto {
     // @Length(4, 16, {message: 'Не меньше 4 и не больше 16'})
     // readonly password: string
 }
+
+export type entityType = 'article'

@@ -6,8 +6,11 @@ module.exports = {
     await queryInterface.bulkInsert('comments', [{
       id: 1,
       text: "\"Интересно\" - это эвфемизм?",
-      articleId: 1,
+      entityType: 'article',
+      entityId: 1,
       userId: 1,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     }]);
   },
 

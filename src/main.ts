@@ -13,7 +13,7 @@ async function start() {
     app.use(cookieParser());
     // app.enableCors();
     app.enableCors({
-        origin: 'http://localhost:3000',
+        origin: 'http://localhost:8080',
         credentials: true, // << totally ruins it
         preflightContinue: false,
         optionsSuccessStatus: 204

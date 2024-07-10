@@ -3,7 +3,8 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/roles-auth.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { CommentsService } from './comments.service';
-import { Comment, CommentCreationAttrs } from './comments.model';
+import { Comment } from './comments.model';
+import { CreateCommentDto } from './dto/create-comment.dto';
 
 @ApiTags('Профили')
 @UseGuards(RolesGuard)
@@ -19,7 +20,7 @@ export class CommentsController {
     @UseGuards(RolesGuard)
     @Roles("admin", "user")
     @Post()
-    async createComment(@Body() dto: CommentCreationAttrs, @Req() request) {
+    async createComment(@Body() dto: CreateCommentDto, @Req() request) {
         const user = request.user;
 
         return await this.commentsService.create({...dto, userId: user?.id})

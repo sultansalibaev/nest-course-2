@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { Comment, CommentCreationAttrs } from './comments.model';
+import { Comment } from './comments.model';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { ArticlesService } from 'src/articles/articles.service';
 import { getPublicUserData } from 'src/shared/common';
@@ -15,23 +15,30 @@ export class CommentsService {
     }
 
     async getComments(query: object) {
-        const keyName = Object.keys(query)?.find?.(key => key?.includes?.('Id') && !isNaN(Number(query?.[key])))
+        const keyName = Object.keys(query)?.find?.(
+            key => key?.includes?.('Id') && !isNaN(Number(query?.[key]))
+        );
+        const entity_type = keyName?.replace?.('Id', '');
 
         if (keyName == undefined) throw new HttpException('Комментарии не найдены', HttpStatus.NOT_FOUND);
 
-        const comments = await this.commentRepository.findAll({
+        let comments = await this.commentRepository.findAll({
             include: { all: true },
             where: {
-                [keyName]: query?.[keyName]
-            }
+                entityType: entity_type,
+                entityId: query?.[keyName],
+            },
         });
 
         if (!comments?.length) throw new HttpException('Комментарии не найдены', HttpStatus.NOT_FOUND)
 
-        comments.forEach(comment => {
-            // @ts-ignore
-            comment.dataValues.author.dataValues = getPublicUserData(comment?.dataValues?.author?.dataValues);
-        })
+        comments = comments.map(comment => {
+            let item = comment.get({ plain: true });
+
+            item.author = getPublicUserData(item?.author);
+
+            return item;
+        });
 
         return comments
     }

@@ -145,10 +145,10 @@ export class AuthService {
         const payload = {
             id: user.id,
             email: user.email,
-            roles: user.roles.map(role => ({
+            roles: user.roles?.map?.(role => ({
                 value: role.value,
                 description: role.description,
-            }))
+            })) ?? []
         }
 
         const result: {token:string} = {

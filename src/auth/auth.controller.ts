@@ -18,8 +18,8 @@ export class AuthController {
             const { token, expired } = await this.authService.login(userDto)
             res.cookie('access_token', token, {
                 httpOnly: true,
-                secure: false,
-                sameSite: 'strict',
+                secure: true, // false
+                sameSite: 'strict', // None
                 expires: new Date(expired * 1000),
             })
             return { status: 200, message: 'Вы успешно авторизованы' }
@@ -39,7 +39,7 @@ export class AuthController {
 
         res.clearCookie('access_token')
 
-        return {}
+        return { status: 200 }
     }
 
     @Post('/registration')
@@ -55,8 +55,8 @@ export class AuthController {
         const { token, expired } = await this.authService.refreshToken(oldToken)
         res.cookie('access_token', token, {
             httpOnly: true,
-            secure: false,
-            sameSite: 'strict',
+            secure: true, // false
+            sameSite: 'strict', // None
             expires: new Date(expired * 1000),
         })
         return { status: 200 }

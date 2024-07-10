@@ -6,11 +6,10 @@ export function getOnlyParams(params: any[], my_object: object) {
     }, {})
 }
 
-export function getPublicUserData(my_object: object) {
+export function getPublicUserData(my_object: object, fullInfo: boolean = false) {
     return getOnlyParams([
-        'id', 'username', 'phone', 'email', 'banned', 'banReason',
-        'isActivated', 'activationLink', 'createdAt', 'updatedAt',
-        // @ts-ignore
+        'id', 'username', 'phone', 'email',
+        ...(fullInfo ? ['banned', 'banReason', 'isActivated', 'activationLink', 'createdAt', 'updatedAt'] : [])
     ], my_object);
 }
 

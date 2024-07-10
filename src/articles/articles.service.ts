@@ -3,7 +3,7 @@ import {ArticleImageBlock, CreateArticleDto} from "./dto/create-article.dto";
 import {InjectModel} from "@nestjs/sequelize";
 import {Article, ArticleCreationAttrs} from "./articles.model";
 import {FilesService} from "../files/files.service";
-import { getPublicUserData } from 'src/shared/common';
+import { buildQueryOptions, getPublicUserData } from 'src/shared/common';
 
 @Injectable()
 export class ArticlesService {
@@ -21,7 +21,19 @@ export class ArticlesService {
         });
 
         // @ts-ignore
-        article.dataValues.author.dataValues = getPublicUserData(article?.dataValues?.author?.dataValues);
+        if (article?.dataValues?.author?.dataValues) article.dataValues.author.dataValues = getPublicUserData(article?.dataValues?.author?.dataValues);
+
+        return article
+    }
+
+    async getArticles(query: object) {
+        const article = await this.articleRepository.findAll({
+            include: { all: true },
+            ...buildQueryOptions(query, 'title')
+        });
+
+        // @ts-ignore
+        if (article?.dataValues?.author?.dataValues) article.dataValues.author.dataValues = getPublicUserData(article?.dataValues?.author?.dataValues);
 
         return article
     }
