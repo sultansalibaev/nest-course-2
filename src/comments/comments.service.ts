@@ -4,6 +4,8 @@ import { Comment } from './comments.model';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { ArticlesService } from 'src/articles/articles.service';
 import { getPublicUserData } from 'src/shared/common';
+import { User } from 'src/users/users.model';
+import { Profile } from 'src/profile/profile.model';
 
 @Injectable()
 export class CommentsService {
@@ -23,7 +25,18 @@ export class CommentsService {
         if (keyName == undefined) throw new HttpException('Комментарии не найдены', HttpStatus.NOT_FOUND);
 
         let comments = await this.commentRepository.findAll({
-            include: { all: true },
+            include: [
+              {
+                model: User,
+                attributes: ['id', 'username', 'phone', 'email'],
+                include: [
+                  {
+                    model: Profile,
+                    attributes: ['avatar'],
+                  },
+                ],
+              },
+            ],
             where: {
                 entityType: entity_type,
                 entityId: query?.[keyName],
@@ -35,7 +48,10 @@ export class CommentsService {
         comments = comments.map(comment => {
             let item = comment.get({ plain: true });
 
-            item.author = getPublicUserData(item?.author);
+            // item.author = getPublicUserData(item?.author);
+
+            item.author.avatar = item.author.profile.avatar;
+            delete item.author.profile;
 
             return item;
         });

@@ -13,15 +13,23 @@ export class ProfileService {
         private userService: UsersService,
     ) {}
 
-    async getProfileData(user: User) {
+    async getProfileData(userId: number) {
         const profile = await this.profileRepository.findOne({
-            where: { userId: user.id },
+            where: { userId: userId },
+            include: [
+                {
+                    model: User,
+                    attributes: ['email', 'username', 'phone'],
+                },
+            ],
         })
 
+        const profileData = profile.get({ plain: true })
+
         return excludeParams(
-            ['id', 'userId', 'createdAt', 'updatedAt'],
-            profile.dataValues,
-            { email: user.email }
+            ['id', 'userId', 'createdAt', 'updatedAt', 'user'],
+            profileData,
+            profileData?.user
         );
     }
 

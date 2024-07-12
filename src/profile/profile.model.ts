@@ -1,4 +1,4 @@
-import {Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
+import {BelongsTo, Column, DataType, ForeignKey, Model, Table} from "sequelize-typescript";
 import {User} from "../users/users.model";
 
 export interface ProfileCreationAttrs {
@@ -54,4 +54,11 @@ export class Profile extends Model<Profile, ProfileCreationAttrs> {
     @ForeignKey(() => User)
     @Column({ type: DataType.INTEGER })
     userId: number
+
+    @BelongsTo(() => User)
+    user: User
+
+    email?: string
+    username?: string
+    phone?: string
 }

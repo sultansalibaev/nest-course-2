@@ -1,4 +1,4 @@
-import {BelongsToMany, Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
+import {BelongsToMany, Column, DataType, HasMany, HasOne, Model, Table} from "sequelize-typescript";
 import {ApiProperty} from "@nestjs/swagger";
 import {Role} from "../roles/roles.model";
 import {UserRoles} from "../roles/user-roles.model";
@@ -61,6 +61,9 @@ export class User extends Model<User, UserCreationAttrs> {
     @HasMany(() => Comment)
     comments: Comment[]
 
-    @HasMany(() => Profile)
-    profile: Profile[]
+    @HasOne(() => Profile)
+    profile: Profile
+
+    // Add avatar property
+    avatar?: string;
 }

@@ -29,7 +29,7 @@ export class ArticlesService {
     async getArticles(query: object) {
         const article = await this.articleRepository.findAll({
             include: { all: true },
-            ...buildQueryOptions(query, 'title')
+            ...buildQueryOptions(query, 'title', this.articleRepository)
         });
 
         // @ts-ignore
