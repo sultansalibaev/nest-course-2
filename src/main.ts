@@ -2,9 +2,10 @@ import * as process from "process";
 import {NestFactory} from "@nestjs/core";
 import {AppModule} from "./app.module";
 import {DocumentBuilder, SwaggerModule} from "@nestjs/swagger";
-import {ValidationPipe} from "./pipes/validation.pipe";
+import {ValidationPipe} from "./app/pipes/validation.pipe";
 import * as cookieParser from 'cookie-parser';
 import {timeout} from "rxjs";
+import { Logger } from "@nestjs/common";
 
 async function start() {
     const PORT = process.env.PORT || 5000
@@ -30,7 +31,12 @@ async function start() {
 
     app.useGlobalPipes(new ValidationPipe())
 
-    await app.listen(PORT, () => console.log(`Server started on port = ${PORT}`))
+    try {
+        await app.listen(PORT, () => console.log(`Server started on port = ${PORT}`))
+        Logger.log(`Server is running on http://localhost:${PORT}`, 'Bootstrap')
+    } catch (error) {
+        Logger.log('Error starting server', error)
+    }
 }
 
 start()

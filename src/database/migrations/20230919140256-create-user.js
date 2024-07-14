@@ -1,5 +1,5 @@
 // import Platform from '../models/Platform';
-import {User} from "../../users/users.model";
+import {User} from "src/entities/users/users.model";
 
 module.exports = {
   up: async (queryInterface) => {
