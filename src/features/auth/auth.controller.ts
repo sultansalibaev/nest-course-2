@@ -29,8 +29,8 @@ export class AuthController {
         }
     }
 
-    @UseGuards(RolesGuard)
-    @Roles("admin", "user")
+    // @UseGuards(RolesGuard)
+    // @Roles("admin", "user")
     @Post('/logout')
     async logout(@Res({ passthrough: true }) res, @Req() request) {
         const user = request.user
